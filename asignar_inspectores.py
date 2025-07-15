@@ -8,7 +8,15 @@ import os
 def ejecutar_asignacion():
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
-    gis = GIS("https://www.arcgis.com", usuario, clave)
+    if not usuario or not clave:
+        print("❌ No se encontraron credenciales en las variables de entorno.")
+        return
+    try:
+        gis = GIS("https://www.arcgis.com", usuario, clave)
+        print(f"🟢 Sesión iniciada como: {gis.users.me.username}")
+    except Exception as e:
+        print(f"❌ Error al iniciar sesión en ArcGIS Online: {e}")
+        return
 
     # Title: inspectores | Type: Feature Service | Owner: coellop_gadmriobamba
     item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")
