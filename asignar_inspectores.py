@@ -5,7 +5,9 @@ from arcgis.features import Feature
 from datetime import timedelta, datetime
 import os
 print("🟡 Script iniciado...")  # <-- Rastreo inicial
+
 def ejecutar_asignacion():
+    print("🟡 Ejecutando función asignar_inspectores")
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
     if not usuario or not clave:
