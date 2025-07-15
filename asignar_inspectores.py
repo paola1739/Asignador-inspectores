@@ -190,3 +190,5 @@ def ejecutar_asignacion():
         print(respuesta_inspectores)
     else:
         print("No hay inspectores para actualizar.")
+if __name__ == "__main__":
+    ejecutar_asignacion()
