@@ -3,9 +3,12 @@ from arcgis.gis import GIS
 import pandas as pd
 from arcgis.features import Feature
 from datetime import timedelta, datetime
+import os
 
 def ejecutar_asignacion():
-    gis = GIS("home")
+    usuario = os.getenv("AGOL_USERNAME")
+    clave = os.getenv("AGOL_PASSWORD")
+    gis = GIS("https://www.arcgis.com", usuario, clave)
 
     # Title: inspectores | Type: Feature Service | Owner: coellop_gadmriobamba
     item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")
