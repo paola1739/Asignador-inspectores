@@ -142,7 +142,7 @@ def ejecutar_asignacion():
                 "priority": 0,
                 "assignmenttype": assignmenttype_guid,
                 "location": row["area_responsable"],
-                "workorderid": str(row["objectid"]),
+                "workorderid": str(row["globalid"]),
                 "workerid": worker_globalid,
                 "duedate": due_date,
                 "assigneddate": datetime.utcnow()
