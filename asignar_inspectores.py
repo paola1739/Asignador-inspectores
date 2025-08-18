@@ -23,7 +23,7 @@ def ejecutar_asignacion():
     # Title: inspectores | Type: Feature Service | Owner: coellop_gadmriobamba
     item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")
     # Title: registro_infracciones-gadmr | Type: Feature Service | Owner: coellop_gadmriobamba
-    item_denuncia = gis.content.get("a43517e5bd494fabb1c0c8b8a5dad1c3")
+    item_denuncia = gis.content.get("60c69b82ab074b65a8a239fcd2067ce4")
     # Title: Atención denuncias municipales | Type: Feature Service | Owner: coellop_gadmriobamba
     item_workforce = gis.content.get("bf86d367917747cf82fb57a9128eed0e")
 
