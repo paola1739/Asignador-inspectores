@@ -72,8 +72,9 @@ def ejecutar_asignacion():
 
         # Generar número de formulario
         siglas_area = row["siglas_area"] # viene de la denuncia
+        siglas_inspector = inspector_asignado["siglas"]  # viene de la tabla inspectores
         anio_actual = datetime.utcnow().year
-        ultimo_numero = inspector.get("ultimo_numero", 0) + 1
+        ultimo_numero = inspector_asignado.get("ultimo_numero", 0) + 1
 
         numero_formulario = f"DGSH-IC-{siglas_inspector}-{siglas_area}-{anio_actual}-{ultimo_numero}"
 
