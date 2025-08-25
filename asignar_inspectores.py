@@ -1,7 +1,7 @@
 
 from arcgis.gis import GIS
 import pandas as pd
-from arcgis.features import Feature
+from arcgis.features import FeatureLayer, Feature
 from datetime import timedelta, datetime
 import os
 print("🟡 Script iniciado...")  # <-- Rastreo inicial
@@ -67,7 +67,15 @@ def ejecutar_asignacion():
             print(f"No hay inspectores activos para dirección: {direccion}, área: {area}")
             continue
 
+        # Seleccionar inspector con menos trámites asignados
         inspector_asignado = disponibles.sort_values("num_tramites").iloc[0]
+
+        # Generar número de formulario
+        siglas_area = row["siglas_area"] # viene de la denuncia
+        anio_actual = datetime.utcnow().year
+        ultimo_numero = inspector.get("ultimo_numero", 0) + 1
+
+        numero_formulario = f"DGSH-IC-{siglas_inspector}-{siglas_area}-{anio_actual}-{ultimo_numero}"
 
         # Actualizar denuncia
         feature_denuncia = Feature.from_dict({
@@ -85,6 +93,7 @@ def ejecutar_asignacion():
             "attributes": {
                 "objectid": inspector_asignado["ObjectID"],
                 "num_tramites": inspector_asignado["num_tramites"] + 1
+                "ultimo_numero": ultimo_numero,
             }
         })
         inspectores_actualizados.append(feature_inspector)
@@ -143,6 +152,7 @@ def ejecutar_asignacion():
                 "assignmenttype": assignmenttype_guid,
                 "location": row["area_responsable"],
                 "workorderid": str(row["globalid"]),
+                "codigo_formulario": numero_formulario,
                 "workerid": worker_globalid,
                 "duedate": due_date,
                 "assigneddate": datetime.utcnow()
