@@ -72,6 +72,7 @@ def ejecutar_asignacion():
 
         # Generar número de formulario
         siglas_area = row["siglas_area"] # viene de la denuncia
+        nombre_inspector = inspector_asignado["nombre"]  # viene de la tabla inspectores
         siglas_inspector = inspector_asignado["siglas"]  # viene de la tabla inspectores
         anio_actual = datetime.utcnow().year
         ultimo_numero = inspector_asignado.get("ultimo_numero", 0) + 1
@@ -154,6 +155,7 @@ def ejecutar_asignacion():
                 "location": row["area_responsable"],
                 "workorderid": str(row["globalid"]),
                 "codigoformulario": numero_formulario,
+                "nombreinspector": nombre_inspector,
                 "workerid": worker_globalid,
                 "duedate": due_date,
                 "assigneddate": datetime.utcnow()
