@@ -85,7 +85,8 @@ def ejecutar_asignacion():
                 "objectid": row["objectid"],
                 "inspector_asignado": inspector_asignado["nombre"],
                 "username": inspector_asignado["usernamearc"],
-                "estado_tramite": "En proceso"
+                "estado_tramite": "En proceso",
+                "id_denuncia_c":row["objectid"]
             }
         })
         denuncias_actualizadas.append(feature_denuncia)
