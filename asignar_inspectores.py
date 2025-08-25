@@ -92,8 +92,8 @@ def ejecutar_asignacion():
         feature_inspector = Feature.from_dict({
             "attributes": {
                 "objectid": inspector_asignado["ObjectID"],
-                "num_tramites": inspector_asignado["num_tramites"] + 1
-                "ultimo_numero": ultimo_numero,
+                "num_tramites": inspector_asignado["num_tramites"] + 1,
+                "ultimo_numero": ultimo_numero
             }
         })
         inspectores_actualizados.append(feature_inspector)
