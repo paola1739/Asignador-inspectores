@@ -105,7 +105,7 @@ def ejecutar_asignacion_supervision():
                 "status": 1,
                 "priority": 0,
                 "assignmenttype": assignmenttype_guid,
-                "location": row.get("area_responsable", "Sin área"),
+                "location": row.get("direccion", "Sin área"),
                 "workorderid": str(row["globalid"]),
                 "workerid": worker_globalid,
                 "duedate": due_date,
