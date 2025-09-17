@@ -83,7 +83,7 @@ def ejecutar_asignacion_supervision():
         descripcion_tarea = (
             f"Infracción reportada: {tipo_infraccion}\n"
             f"Referencia: {direccion_infraccion}\n"
-            f"Inspector: {denunciado}\n"
+            f"Inspector: {inspector}\n"
             f"Cedula Infractor: {cedula_infractor}\n"
             f"Nombre denunciado: {nombre_denunciado}\n\n"
          #   f"Antecedentes:\n{antecedentes}\n\n"
