@@ -86,9 +86,9 @@ def ejecutar_asignacion_supervision():
             f"Inspector: {inspector}\n"
             f"Cedula Infractor: {cedula_infractor}\n"
             f"Nombre denunciado: {nombre_denunciado}\n\n"
-         #   f"Antecedentes:\n{antecedentes}\n\n"
-         #   f"Desarrollo:\n{desarrollo}\n\n"
-         #   f"Conclusiones:\n{conclusiones}"
+            f"Antecedentes:\n{antecedentes}\n\n"
+            f"Desarrollo:\n{desarrollo}\n\n"
+            f"Conclusiones:\n{conclusiones}"
         )
 
         # Fecha de vencimiento
