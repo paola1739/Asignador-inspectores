@@ -97,31 +97,30 @@ def ejecutar_asignacion_supervision():
                 print(f"Error al convertir fecha_actual: {e}")
 
         # Crear tarea
-        tarea = Feature.from_dict({
+        tarea = {
             "attributes": {
-                "description": descripcion_tarea,
-                "status": 1,
-                "priority": 0,
-                "assignmenttype": assignmenttype_guid,
-                "location": row.get("area_responsable", "Sin área"),
-                "workorderid": str(row["globalid"]),
-                "workerid": worker_globalid,
-                "duedate": due_date,
-                "assigneddate": datetime.utcnow()
-            },
-            "geometry": geometry
-        })
+            "description": descripcion_tarea,
+            "status": 1,
+            "priority": 0,
+            "assignmenttype": assignmenttype_guid,
+            "location": row.get("area_responsable", "Sin área"),
+            "workorderid": str(row["globalid"]),
+            "workerid": worker_globalid,
+            "duedate": due_date,
+            "assigneddate": int(datetime.utcnow().timestamp() * 1000)
+                        },
+        "geometry": geometry
+                }
         tareas_creadas.append(tarea)
 
         # Actualizar estado
-        informes_actualizados.append(
-            Feature.from_dict({
-                "attributes": {
-                    "objectid": row["objectid"],
-                    "estado_tramite": "En supervisión"
-                }
-            })
-        )
+        informes_actualizados.append({
+        "attributes": {
+        "objectid": row["objectid"],
+        "estado_tramite": "En supervisión"
+        }
+        })
+
 
     # Guardar tareas
     if tareas_creadas:
