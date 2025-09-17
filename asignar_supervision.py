@@ -1,9 +1,9 @@
-
 from arcgis.gis import GIS
 import pandas as pd
-from arcgis.features import FeatureLayer, Feature
+from arcgis.features import Feature
 from datetime import timedelta, datetime
 import os
+
 print("🟡 Script de supervisión iniciado...")
 
 def ejecutar_asignacion_supervision():
@@ -12,7 +12,6 @@ def ejecutar_asignacion_supervision():
     if not usuario or not clave:
         print("❌ No se encontraron credenciales en las variables de entorno.")
         return
-
     try:
         gis = GIS("https://www.arcgis.com", usuario, clave)
         print(f"🟢 Sesión iniciada como: {gis.users.me.username}")
@@ -29,10 +28,13 @@ def ejecutar_asignacion_supervision():
     layer_asignaciones = item_workforce.layers[0]
     layer_workers = item_workforce.layers[1]
 
-    # Consultar informes que ya tienen datos del inspector
-    features_denuncias = layer_denuncias.query(where="estado_tramite = 'Informe enviado'", out_fields="*", return_geometry=True)
+    # Consultar informes con estado "Informe enviado"
+    features_denuncias = layer_denuncias.query(
+        where="estado_tramite = 'Informe enviado'",
+        out_fields="*",
+        return_geometry=True
+    )
     df_informes = features_denuncias.sdf
-
     print(f"Total de informes para supervisión encontrados: {len(df_informes)}")
 
     if df_informes.empty:
@@ -42,22 +44,31 @@ def ejecutar_asignacion_supervision():
     assignmenttype_guid = "52de28ac-8476-42ca-8e16-d8b7872ad3c5"
 
     # Usuario fijo del supervisor
-    supervisor_user = "coellop_gadmriobamba"  
-    features_workers = layer_workers.query(where=f"userid='{supervisor_user}'", out_fields="*", return_geometry=False)
+    supervisor_user = "coellop_gadmriobamba"
+    features_workers = layer_workers.query(
+        where=f"userid='{supervisor_user}'",
+        out_fields="*",
+        return_geometry=False
+    )
     if not features_workers.features:
         print(f"❌ No se encontró el supervisor {supervisor_user} en Workforce.")
         return
     worker_globalid = features_workers.features[0].attributes["GlobalID"]
 
-    tareas_creadas = []
+    # Listas de actualizaciones
     informes_actualizados = []
+    tareas_creadas = []
 
     for _, row in df_informes.iterrows():
         # Geometría
         shape_dict = row.get("SHAPE") or row.get("geometry")
         geometry = None
         if shape_dict:
-            geometry = {"x": shape_dict.get("x"), "y": shape_dict.get("y"), "spatialReference": {"wkid": 4326}}
+            geometry = {
+                "x": shape_dict.get("x"),
+                "y": shape_dict.get("y"),
+                "spatialReference": {"wkid": 4326}
+            }
 
         # Campos adicionales
         tipo_infraccion = row.get("tipo_infraccion", "Sin especificar")
@@ -72,7 +83,6 @@ def ejecutar_asignacion_supervision():
         desarrollo = row.get("desarrollo", "---")
         conclusiones = row.get("conclusiones", "---")
 
-        # Descripción para la tarea
         descripcion_tarea = (
             f"Infracción reportada: {tipo_infraccion}\n"
             f"Referencia: {direccion_infraccion}\n"
@@ -97,30 +107,29 @@ def ejecutar_asignacion_supervision():
                 print(f"Error al convertir fecha_actual: {e}")
 
         # Crear tarea
-        tarea = {
+        tarea = Feature.from_dict({
             "attributes": {
-            "description": descripcion_tarea,
-            "status": 1,
-            "priority": 0,
-            "assignmenttype": assignmenttype_guid,
-            "location": row.get("area_responsable", "Sin área"),
-            "workorderid": str(row["globalid"]),
-            "workerid": worker_globalid,
-            "duedate": due_date,
-            "assigneddate": int(datetime.utcnow().timestamp() * 1000)
-                        },
-        "geometry": geometry
-                }
+                "description": descripcion_tarea,
+                "status": 1,
+                "priority": 0,
+                "assignmenttype": assignmenttype_guid,
+                "location": row.get("area_responsable", "Sin área"),
+                "workorderid": str(row["globalid"]),
+                "workerid": worker_globalid,
+                "duedate": due_date,
+                "assigneddate": datetime.utcnow()
+            },
+            "geometry": geometry
+        })
         tareas_creadas.append(tarea)
 
         # Actualizar estado
-        informes_actualizados.append({
-        "attributes": {
-        "objectid": row["objectid"],
-        "estado_tramite": "En supervisión"
-        }
-        })
-
+        informes_actualizados.append(Feature.from_dict({
+            "attributes": {
+                "objectid": row["objectid"],
+                "estado_tramite": "En supervisión"
+            }
+        }))
 
     # Guardar tareas
     if tareas_creadas:
@@ -135,7 +144,10 @@ def ejecutar_asignacion_supervision():
                 adjuntos = layer_denuncias.attachments.get_list(oid=oid_informe)
                 for adj in adjuntos:
                     try:
-                        contenido = layer_denuncias.attachments.download(oid=int(oid_informe), attachment_id=adj["id"])
+                        contenido = layer_denuncias.attachments.download(
+                            oid=int(oid_informe),
+                            attachment_id=adj["id"]
+                        )
                         if isinstance(contenido, list) and contenido:
                             layer_asignaciones.attachments.add(oid_tarea, contenido[0])
                             print(f"Adjunto '{adj['name']}' copiado a la tarea.")
