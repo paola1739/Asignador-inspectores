@@ -2,7 +2,8 @@ name: Ejecutar script de asignación
 
 on:
   workflow_dispatch:  # permite ejecutarlo manualmente desde GitHub
-  repository_dispatch:  # permite ejecutarlo desde Make
+  repository_dispatch:
+    types: [ejecutar-inspeccion]  # solo se dispara desde Make con este tipo
 
 jobs:
   run-script:
