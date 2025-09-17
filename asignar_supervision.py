@@ -2,6 +2,7 @@ from arcgis.gis import GIS
 import pandas as pd
 from arcgis.features import Feature
 from datetime import timedelta, datetime
+import html
 import os
 
 print("🟡 Script de supervisión iniciado...")
@@ -101,6 +102,11 @@ def ejecutar_asignacion_supervision():
             except Exception as e:
                 print(f"Error al convertir fecha_actual: {e}")
 
+        
+        # Corregir description antes de crear la tarea
+        descripcion_tarea = descripcion_tarea.replace("<NA>", "No disponible")
+        descripcion_tarea = html.escape(descripcion_tarea)
+        
         # Crear tarea
         tarea = Feature.from_dict({
             "attributes": {
