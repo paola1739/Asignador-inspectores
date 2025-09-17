@@ -73,8 +73,7 @@ def ejecutar_asignacion_supervision():
         # Campos adicionales
         tipo_infraccion = row.get("infractor", "Sin especificar")
         direccion_infraccion = row.get("direccion_infraccion", "Sin referencia")
-        denunciado = row.get("infractor", "No registrado")
-        
+        inspector = row.get("inspector_inspeccion", "No registrado")
         cedula_infractor = row.get("cedula_infractor", "No registrado")
         nombre_denunciado = row.get("nombre_denunciado", "No registrado")
         antecedentes = row.get("antecedentes", "---")
@@ -84,8 +83,8 @@ def ejecutar_asignacion_supervision():
         descripcion_tarea = (
             f"Infracción reportada: {tipo_infraccion}\n"
             f"Referencia: {direccion_infraccion}\n"
-            f"Denunciado: {denunciado}\n"
-            f"Infractor (CI): {cedula_infractor}\n"
+            f"Inspector: {denunciado}\n"
+            f"Cedula Infractor: {cedula_infractor}\n"
             f"Nombre denunciado: {nombre_denunciado}\n\n"
             f"Antecedentes:\n{antecedentes}\n\n"
             f"Desarrollo:\n{desarrollo}\n\n"
