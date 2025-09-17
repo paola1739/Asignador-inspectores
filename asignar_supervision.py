@@ -6,7 +6,7 @@ import os
 print("ðﾟﾟﾡ Script iniciado...")  # <-- Rastreo inicial
 
 def ejecutar_asignacion():
-    print("ðﾟﾟﾡ Ejecutando función asignar_inspectores")
+    print("ðﾟﾟﾡ Ejecutando función asignar inspectores")
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
     if not usuario or not clave:
@@ -41,9 +41,9 @@ def ejecutar_asignacion():
     df_denuncias = features_denuncias.sdf
     df_workers = features_workers.sdf
 
-    # Filtrar denuncias con estado "Recibido"
-    df_nuevas = df_denuncias[df_denuncias["estado_tramite"] == "Recibido"].copy()
-    print(f"Total de denuncias 'Recibido' encontradas: {len(df_nuevas)}")
+    # Filtrar denuncias con estado "Informe enviado"
+    df_nuevas = df_denuncias[df_denuncias["estado_tramite"] == "Informe enviado"].copy()
+    print(f"Total de denuncias 'Informe enviado' encontradas: {len(df_nuevas)}")
 
     # Listas de actualizaciones
     denuncias_actualizadas = []
