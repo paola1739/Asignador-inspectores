@@ -1,13 +1,12 @@
-
 from arcgis.gis import GIS
 import pandas as pd
 from arcgis.features import FeatureLayer, Feature
 from datetime import timedelta, datetime
 import os
-print("🟡 Script iniciado...")  # <-- Rastreo inicial
+print("ðﾟﾟﾡ Script iniciado...")  # <-- Rastreo inicial
 
 def ejecutar_asignacion():
-    print("🟡 Ejecutando función asignar_inspectores")
+    print("ðﾟﾟﾡ Ejecutando función asignar_inspectores")
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
     if not usuario or not clave:
@@ -15,7 +14,7 @@ def ejecutar_asignacion():
         return
     try:
         gis = GIS("https://www.arcgis.com", usuario, clave)
-        print(f"🟢 Sesión iniciada como: {gis.users.me.username}")
+        print(f"ðﾟﾟﾢ Sesión iniciada como: {gis.users.me.username}")
     except Exception as e:
         print(f"❌ Error al iniciar sesión en ArcGIS Online: {e}")
         return
@@ -206,3 +205,4 @@ def ejecutar_asignacion():
         print("No hay inspectores para actualizar.")
 if __name__ == "__main__":
     ejecutar_asignacion()
+
