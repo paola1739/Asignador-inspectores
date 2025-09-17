@@ -73,7 +73,7 @@ def ejecutar_asignacion_supervision():
 
         # Campos adicionales
         tipo_infraccion = row.get("infractor", "Sin especificar")
-        direccion_infraccion = row.get("direccion_infraccion", "Sin referencia")
+        direccion_infraccion = row.get("direccion", "Sin referencia")
         inspector = row.get("inspector_inspeccion", "No registrado")
         cedula_infractor = row.get("cedula_infractor", "No registrado")
         nombre_denunciado = row.get("nombre_denunciado", "No registrado")
