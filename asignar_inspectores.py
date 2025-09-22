@@ -1,9 +1,9 @@
-
 from arcgis.gis import GIS
 import pandas as pd
 from arcgis.features import FeatureLayer, Feature
 from datetime import timedelta, datetime
 import os
+
 print("🟡 Script iniciado...")  # <-- Rastreo inicial
 
 def ejecutar_asignacion():
@@ -20,12 +20,10 @@ def ejecutar_asignacion():
         print(f"❌ Error al iniciar sesión en ArcGIS Online: {e}")
         return
 
-    # Title: inspectores | Type: Feature Service | Owner: coellop_gadmriobamba
-    item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")
-    # Title: registro_infracciones-gadmr | Type: Feature Service | Owner: coellop_gadmriobamba
-    item_denuncia = gis.content.get("60c69b82ab074b65a8a239fcd2067ce4")
-    # Title: Atención denuncias municipales | Type: Feature Service | Owner: coellop_gadmriobamba
-    item_workforce = gis.content.get("bf86d367917747cf82fb57a9128eed0e")
+    # Items
+    item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")  # inspectores
+    item_denuncia = gis.content.get("60c69b82ab074b65a8a239fcd2067ce4")  # denuncias
+    item_workforce = gis.content.get("bf86d367917747cf82fb57a9128eed0e")  # workforce
 
     # Capas y tablas
     tabla_inspectores = item_tabla.tables[0]
@@ -71,13 +69,31 @@ def ejecutar_asignacion():
         inspector_asignado = disponibles.sort_values("num_tramites").iloc[0]
 
         # Generar número de formulario
-        siglas_area = row["siglas_area"] # viene de la denuncia
-        nombre_inspector = inspector_asignado["nombre"]  # viene de la tabla inspectores
-        siglas_inspector = inspector_asignado["siglas"]  # viene de la tabla inspectores
+        siglas_area = row["siglas_area"]  # viene de la denuncia
+        nombre_inspector = inspector_asignado["nombre"]
+        siglas_inspector = inspector_asignado["siglas"]
         anio_actual = datetime.utcnow().year
         ultimo_numero = inspector_asignado.get("ultimo_numero", 0) + 1
 
         numero_formulario = f"DGSH-IC-{siglas_inspector}-{siglas_area}-{anio_actual}-{ultimo_numero}"
+
+        # ✅ Bloque de comprobación del GLOBALID
+        globalid_test = row["globalid"]
+        print("🔎 Probando GlobalID:", globalid_test)
+
+        result = layer_denuncias.query(
+            where=f"GLOBALID = '{globalid_test}'",
+            out_fields="*",
+            return_geometry=False
+        )
+
+        if result.features:
+            print("✅ Registro encontrado en layer_denuncias:")
+            atributos = result.features[0].attributes
+            for k, v in atributos.items():
+                print(f"   {k}: {v}")
+        else:
+            print("❌ No se encontró ningún registro con ese GLOBALID en layer_denuncias")
 
         # Actualizar denuncia
         feature_denuncia = Feature.from_dict({
@@ -86,7 +102,7 @@ def ejecutar_asignacion():
                 "inspector_asignado": inspector_asignado["nombre"],
                 "username": inspector_asignado["usernamearc"],
                 "estado_tramite": "En proceso",
-                "id_denuncia_c":str(row["globalid"])
+                "id_denuncia_c": str(row["globalid"])
             }
         })
         denuncias_actualizadas.append(feature_denuncia)
@@ -180,7 +196,10 @@ def ejecutar_asignacion():
 
                 for adj in adjuntos:
                     try:
-                        contenido = layer_denuncias.attachments.download(oid=int(oid_denuncia), attachment_id=adj["id"])
+                        contenido = layer_denuncias.attachments.download(
+                            oid=int(oid_denuncia),
+                            attachment_id=adj["id"]
+                        )
                         if isinstance(contenido, list) and contenido:
                             resultado = layer_asignaciones.attachments.add(oid_tarea, contenido[0])
                         else:
@@ -204,5 +223,6 @@ def ejecutar_asignacion():
         print(respuesta_inspectores)
     else:
         print("No hay inspectores para actualizar.")
+
 if __name__ == "__main__":
     ejecutar_asignacion()
