@@ -10,10 +10,10 @@ print("🟡 Script de supervisión iniciado...")
 def limpiar_texto(texto):
     """
     Limpia caracteres que pueden causar errores en campos HTML (como description en Workforce).
+    Maneja valores None y pd.NA de Pandas.
     """
-    if not texto:
+    if texto is None or pd.isna(texto):
         return ""
-    # Reemplazar saltos de línea por \n y eliminar caracteres no válidos
     texto = str(texto)
     texto = re.sub(r"<.*?>", "", texto)  # elimina etiquetas HTML si existen
     texto = texto.replace("\r", "").replace("\n", " | ")
