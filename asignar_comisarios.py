@@ -1,13 +1,12 @@
-
 from arcgis.gis import GIS
 import pandas as pd
-from arcgis.features import FeatureLayer, Feature
+from arcgis.features import Feature
 from datetime import timedelta, datetime
 import os
-print("🟡 Script iniciado...")  # <-- Rastreo inicial
 
-def ejecutar_asignacion():
-    print("🟡 Ejecutando función asignar_inspectores")
+print("🟡 Script asignar_comisario iniciado...")
+
+def ejecutar_asignacion_comisario():
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
     if not usuario or not clave:
@@ -20,91 +19,91 @@ def ejecutar_asignacion():
         print(f"❌ Error al iniciar sesión en ArcGIS Online: {e}")
         return
 
-    # Title: inspectores | Type: Feature Service | Owner: coellop_gadmriobamba
-    item_tabla = gis.content.get("a255f5953df24eb08917602c1d89885e")
-    # Title: registro_infracciones-gadmr | Type: Feature Service | Owner: coellop_gadmriobamba
+    # Tabla comisarios
+    item_tabla = gis.content.get("aa7cb6814d7d44beaa2557533103e7aa")
+    # Denuncias
     item_denuncia = gis.content.get("60c69b82ab074b65a8a239fcd2067ce4")
-    # Title: Atención denuncias municipales | Type: Feature Service | Owner: coellop_gadmriobamba
+    # Workforce
     item_workforce = gis.content.get("bf86d367917747cf82fb57a9128eed0e")
 
-    # Capas y tablas
-    tabla_inspectores = item_tabla.tables[0]
+    tabla_comisarios = item_tabla.tables[0]
     layer_denuncias = item_denuncia.layers[0]
     layer_asignaciones = item_workforce.layers[0]
     layer_workers = item_workforce.layers[1]
 
     # Consultas
-    features_inspectores = tabla_inspectores.query(where="1=1", out_fields="*", return_geometry=False)
-    features_denuncias = layer_denuncias.query(where="1=1", out_fields="*", return_geometry=True)
+    features_comisarios = tabla_comisarios.query(where="1=1", out_fields="*", return_geometry=False)
+    features_denuncias = layer_denuncias.query(
+        where="estado_tramite = 'Supervision Finalizada' AND proceso_administrativo = 'Si'",
+        out_fields="*",
+        return_geometry=True
+    )
     features_workers = layer_workers.query(where="1=1", out_fields="*", return_geometry=False)
 
-    df_inspectores = features_inspectores.sdf
+    df_comisarios = features_comisarios.sdf
     df_denuncias = features_denuncias.sdf
     df_workers = features_workers.sdf
 
-    # Filtrar denuncias con estado "Recibido"
-    df_nuevas = df_denuncias[df_denuncias["estado_tramite"] == "Recibido"].copy()
-    print(f"Total de denuncias 'Recibido' encontradas: {len(df_nuevas)}")
+    print(f"Total de denuncias para comisarios encontradas: {len(df_denuncias)}")
 
-    # Listas de actualizaciones
     denuncias_actualizadas = []
-    inspectores_actualizados = []
+    comisarios_actualizados = []
     tareas_creadas = []
 
-    # GUID del tipo de asignación "Inspeccion"
-    assignmenttype_guid = "22309f2f-e893-4443-97eb-1b6944a27d00"
+    # GUID del tipo de asignación "Comisario"
+    assignmenttype_guid = "33aec22e-5094-4cce-9493-a3444d8fba8c"
 
-    for _, row in df_nuevas.iterrows():
+    for _, row in df_denuncias.iterrows():
         direccion = row["direccion_responsable"]
         area = row["area_responsable"]
 
-        disponibles = df_inspectores[
-            (df_inspectores["direccion"] == direccion) &
-            (df_inspectores["area"] == area)
+        disponibles = df_comisarios[
+            (df_comisarios["direccion"] == direccion) &
+            (df_comisarios["area"] == area)
         ]
 
         if disponibles.empty:
-            print(f"No hay inspectores activos para dirección: {direccion}, área: {area}")
+            print(f"No hay comisarios activos para dirección: {direccion}, área: {area}")
             continue
 
-        # Seleccionar inspector con menos trámites asignados
-        inspector_asignado = disponibles.sort_values("num_tramites").iloc[0]
+        # Seleccionar comisario con menos trámites
+        comisario_asignado = disponibles.sort_values("num_tramites").iloc[0]
 
         # Generar número de formulario
-        siglas_area = row["siglas_area"] # viene de la denuncia
-        nombre_inspector = inspector_asignado["nombre"]  # viene de la tabla inspectores
-        siglas_inspector = inspector_asignado["siglas"]  # viene de la tabla inspectores
+        siglas_area = row["siglas_area"]
+        nombre_comisario = comisario_asignado["nombre"]
+        siglas_comisario = comisario_asignado["siglas"]
         anio_actual = datetime.utcnow().year
-        ultimo_numero = inspector_asignado.get("ultimo_numero", 0) + 1
+        ultimo_numero = comisario_asignado.get("ultimo_numero", 0) + 1
 
-        numero_formulario = f"DGSH-IC-{siglas_inspector}-{siglas_area}-{anio_actual}-{ultimo_numero}"
+        numero_formulario = f"DGSH-CO-{siglas_comisario}-{siglas_area}-{anio_actual}-{ultimo_numero}"
 
         # Actualizar denuncia
         feature_denuncia = Feature.from_dict({
             "attributes": {
                 "objectid": row["objectid"],
-                "inspector_asignado": inspector_asignado["nombre"],
-                "username": inspector_asignado["usernamearc"],
-                "estado_tramite": "En proceso",
-                "id_denuncia_c":str(row["globalid"])
+                "comisario_asignado": nombre_comisario,
+                "username": comisario_asignado["usernamearc"],
+                "estado_tramite": "Asignado a comisario",
+                "id_denuncia_c": str(row["globalid"])
             }
         })
         denuncias_actualizadas.append(feature_denuncia)
 
-        # Actualizar inspector
-        feature_inspector = Feature.from_dict({
+        # Actualizar comisario
+        feature_comisario = Feature.from_dict({
             "attributes": {
-                "objectid": inspector_asignado["ObjectID"],
-                "num_tramites": inspector_asignado["num_tramites"] + 1,
+                "objectid": comisario_asignado["ObjectID"],
+                "num_tramites": comisario_asignado["num_tramites"] + 1,
                 "ultimo_numero": ultimo_numero
             }
         })
-        inspectores_actualizados.append(feature_inspector)
+        comisarios_actualizados.append(feature_comisario)
 
-        # Obtener GlobalID del trabajador
-        worker_index = df_workers[df_workers["userid"] == inspector_asignado["usernamearc"]].index
+        # Buscar worker en Workforce
+        worker_index = df_workers[df_workers["userid"] == comisario_asignado["usernamearc"]].index
         if worker_index.empty:
-            print(f"No se encontró al trabajador {inspector_asignado['usernamearc']} en Workforce")
+            print(f"No se encontró al trabajador {comisario_asignado['usernamearc']} en Workforce")
             continue
 
         worker_feature = features_workers.features[worker_index[0]]
@@ -120,33 +119,17 @@ def ejecutar_asignacion():
                 "spatialReference": {"wkid": 4326}
             }
 
-        # Campos adicionales para la descripción
-        tipo_infraccion = row.get("tipo_infraccion", "Sin especificar")
-        direccion_infraccion = row.get("direccion_infraccion", "Sin referencia")
-        denunciado = row.get("denunciado", "No registrado")
-        descripcion_infraccion = row.get("comentario_denuncia", "Sin detalle")
-        contacto = row.get("contacto_denunciante_no", "No disponible")
-
-        # Descripción formateada
+        # Descripción de la tarea
         descripcion_tarea = (
-            f"Infracción reportada: {tipo_infraccion}\n"
-            f"Referencia: {direccion_infraccion}\n"
-            f"Denunciado: {denunciado}\n"
-            f"Información adicional: {descripcion_infraccion}\n"
-            f"Contacto del denunciante: {contacto}"
+            f"Informe de supervisión finalizada\n"
+            f"Infracción: {row.get('tipo_infraccion','')}\n"
+            f"Infractor: {row.get('denunciado','')}\n"
+            f"Proceso administrativo: {row.get('proceso_administrativo','')}\n"
         )
 
-        # Fecha de vencimiento
-        fecha_actual_str = row.get("fecha_actual")
-        due_date = None
-        if fecha_actual_str:
-            try:
-                fecha_actual = pd.to_datetime(fecha_actual_str)
-                due_date = fecha_actual + timedelta(days=3)
-            except Exception as e:
-                print(f"Error al convertir fecha_actual: {e}")
+        # Fecha límite (3 días desde hoy)
+        due_date = datetime.utcnow() + timedelta(days=3)
 
-        # Crear tarea
         tarea = Feature.from_dict({
             "attributes": {
                 "description": descripcion_tarea,
@@ -156,7 +139,7 @@ def ejecutar_asignacion():
                 "location": row["area_responsable"],
                 "workorderid": str(row["globalid"]),
                 "codigoformulario": numero_formulario,
-                "nombreinspector": nombre_inspector,
+                "nombrecomisario": nombre_comisario,
                 "workerid": worker_globalid,
                 "duedate": due_date,
                 "assigneddate": datetime.utcnow()
@@ -165,44 +148,21 @@ def ejecutar_asignacion():
         })
         tareas_creadas.append(tarea)
 
-    # Guardar tareas y obtener sus IDs
+    # Guardar tareas
     if tareas_creadas:
-        respuesta_tareas = layer_asignaciones.edit_features(adds=tareas_creadas)
-        print("Tareas creadas en Workforce:")
-        print(respuesta_tareas)
-
-        # Asociar adjuntos
-        for i, result in enumerate(respuesta_tareas.get("addResults", [])):
-            if result.get("success"):
-                oid_tarea = result.get("objectId")
-                oid_denuncia = df_nuevas.iloc[i]["objectid"]
-                adjuntos = layer_denuncias.attachments.get_list(oid=oid_denuncia)
-
-                for adj in adjuntos:
-                    try:
-                        contenido = layer_denuncias.attachments.download(oid=int(oid_denuncia), attachment_id=adj["id"])
-                        if isinstance(contenido, list) and contenido:
-                            resultado = layer_asignaciones.attachments.add(oid_tarea, contenido[0])
-                        else:
-                            print(f"⚠️ No se pudo descargar el adjunto '{adj['name']}' correctamente.")
-                    except Exception as e:
-                        print(f"❌ Excepción al copiar adjunto '{adj['name']}': {e}")
+        resp_tareas = layer_asignaciones.edit_features(adds=tareas_creadas)
+        print("Tareas de comisario creadas:", resp_tareas)
     else:
-        print("No hay tareas para crear.")
+        print("No se crearon tareas de comisario.")
 
-    # Actualizar denuncias e inspectores
+    # Actualizar denuncias y comisarios
     if denuncias_actualizadas:
-        respuesta_denuncias = layer_denuncias.edit_features(updates=denuncias_actualizadas)
-        print("Actualización de denuncias:")
-        print(respuesta_denuncias)
-    else:
-        print("No hay denuncias para actualizar.")
+        resp_denuncias = layer_denuncias.edit_features(updates=denuncias_actualizadas)
+        print("Denuncias actualizadas:", resp_denuncias)
 
-    if inspectores_actualizados:
-        respuesta_inspectores = tabla_inspectores.edit_features(updates=inspectores_actualizados)
-        print("Actualización de inspectores:")
-        print(respuesta_inspectores)
-    else:
-        print("No hay inspectores para actualizar.")
+    if comisarios_actualizados:
+        resp_comisarios = tabla_comisarios.edit_features(updates=comisarios_actualizados)
+        print("Comisarios actualizados:", resp_comisarios)
+
 if __name__ == "__main__":
-    ejecutar_asignacion()
+    ejecutar_asignacion_comisario()
