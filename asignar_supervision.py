@@ -124,16 +124,6 @@ def ejecutar_asignacion_supervision():
         })
         tareas_creadas.append(tarea)
 
-    # Tomar el GlobalID de la denuncia actual
-    globalid_test = row["globalid"]
-
-    print("🔎 Probando GlobalID:", globalid_test)
-
-    # Hacer consulta al layer para comprobar que existe
-    result = layer_denuncias.query(
-    where=f"GLOBALID = '{globalid_test}'",
-    out_fields="*",
-    return_geometry=False
 )
 
 if result.features:
@@ -153,6 +143,17 @@ else:
                 "estado_tramite": "En supervisión"
             }
         }))
+
+    # Tomar el GlobalID de la denuncia actual
+    globalid_test = row["globalid"]
+
+    print("🔎 Probando GlobalID:", globalid_test)
+
+    # Hacer consulta al layer para comprobar que existe
+    result = layer_denuncias.query(
+    where=f"GLOBALID = '{globalid_test}'",
+    out_fields="*",
+    return_geometry=False
 
     # Guardar tareas
     if tareas_creadas:
