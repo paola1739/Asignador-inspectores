@@ -124,6 +124,28 @@ def ejecutar_asignacion_supervision():
         })
         tareas_creadas.append(tarea)
 
+    # Tomar el GlobalID de la denuncia actual
+    globalid_test = row["globalid"]
+
+    print("🔎 Probando GlobalID:", globalid_test)
+
+    # Hacer consulta al layer para comprobar que existe
+    result = layer_denuncias.query(
+    where=f"GLOBALID = '{globalid_test}'",
+    out_fields="*",
+    return_geometry=False
+)
+
+if result.features:
+    print("✅ Registro encontrado en layer_denuncias:")
+    atributos = result.features[0].attributes
+    for k, v in atributos.items():
+        print(f"   {k}: {v}")
+else:
+    print("❌ No se encontró ningún registro con ese GLOBALID en layer_denuncias")
+
+     
+
         # Actualizar estado
         informes_actualizados.append(Feature.from_dict({
             "attributes": {
