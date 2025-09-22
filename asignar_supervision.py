@@ -149,8 +149,8 @@ def ejecutar_asignacion_supervision():
         informes_actualizados.append(Feature.from_dict({
             "attributes": {
                 "objectid": row["objectid"],
-                "estado_tramite": "En supervisión"
-                 "id_denuncia": str(row["globalid"]) 
+                "estado_tramite": "En supervisión",
+                "id_denuncia": str(row["globalid"]) 
             }
         }))
 
