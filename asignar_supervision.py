@@ -41,7 +41,7 @@ def ejecutar_asignacion():
     df_workers = features_workers.sdf
 
     # Filtrar denuncias con estado "Recibido"
-    df_nuevas = df_denuncias[df_denuncias["estado_tramite"] == "Recibido"].copy()
+    df_nuevas = df_denuncias[df_denuncias["estado_tramite"] == "Informe enviado"].copy()
     print(f"Total de denuncias 'Recibido' encontradas: {len(df_nuevas)}")
 
     # Listas de actualizaciones
