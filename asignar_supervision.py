@@ -150,6 +150,7 @@ def ejecutar_asignacion_supervision():
             "attributes": {
                 "objectid": row["objectid"],
                 "estado_tramite": "En supervisión"
+                 "parroquia": str(row["globalid"]) # uso temporal, debo crear la variable en el survey de inspector
             }
         }))
 
