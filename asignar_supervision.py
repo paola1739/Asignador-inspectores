@@ -146,13 +146,14 @@ def ejecutar_asignacion_supervision():
         tareas_creadas.append(tarea)
 
         # Actualizar estado
-        informes_actualizados.append(Feature.from_dict({
+        feature_update = Feature.from_dict({
             "attributes": {
                 "objectid": row["objectid"],
                 "estado_tramite": "En supervisión",
-                "id_denuncia": str(row["globalid"]) 
+                "id_denuncia": str(row["globalid"])  # Campo de vínculo
             }
-        }))
+        })
+        informes_actualizados.append(feature_update)
 
     # Guardar tareas
     if tareas_creadas:
