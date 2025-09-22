@@ -7,7 +7,7 @@ import os
 print("🟡 Script iniciado...")  # <-- Rastreo inicial
 
 def ejecutar_asignacion():
-    print("🟡 Ejecutando función asignar_inspectores")
+    print("🟡 Ejecutando función asignar supervisor")
     usuario = os.getenv("AGOL_USERNAME")
     clave = os.getenv("AGOL_PASSWORD")
     if not usuario or not clave:
