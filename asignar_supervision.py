@@ -150,7 +150,7 @@ def ejecutar_asignacion_supervision():
             "attributes": {
                 "objectid": row["objectid"],
                 "estado_tramite": "En supervisión",
-                "id_denuncia": str(row["globalid"])  # Campo de vínculo
+                "id_denuncia_comparar_supervisor": str(row["globalid"])  # Campo de vínculo
             }
         })
         informes_actualizados.append(feature_update)
