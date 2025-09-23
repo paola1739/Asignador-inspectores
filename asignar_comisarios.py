@@ -123,7 +123,7 @@ def ejecutar_asignacion_comisario():
         # localizar columnas relevantes (tolerante)
         col_siglas = find_col(df_comisarios.columns, ["siglas", "siglas_inspector", "sigla"])
         col_nombre = find_col(df_comisarios.columns, ["nombre", "name"])
-        col_user = find_col(df_comisarios.columns, ["usernamearc", "username", "userid", "usuario"])
+        col_user = find_col(df_comisarios.columns, ["nomre_de_usuario", "username", "userid", "usuario"])
         col_obj_comisario = find_col(df_comisarios.columns, ["objectid", "OBJECTID", "oid", "object_id"])
         col_num_tramites = find_col(df_comisarios.columns, ["num_tramites", "numtramites", "num_tramite", "num_trámites"])
         col_ultimo_num = find_col(df_comisarios.columns, ["ultimo_numero", "ultimo_num", "ultimo"])
