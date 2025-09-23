@@ -85,7 +85,7 @@ def ejecutar_asignacion_comisario():
                 "comisario_asignado": nombre_comisario,
                 "username": comisario_asignado["usernamearc"],
                 "estado_tramite": "Asignado a comisario",
-                "id_denuncia_c": str(row["globalid"])
+                "id_denuncia_comparar_comisario": str(row["globalid"])
             }
         })
         denuncias_actualizadas.append(feature_denuncia)
