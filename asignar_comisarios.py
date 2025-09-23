@@ -64,7 +64,7 @@ def ejecutar_asignacion_comisario():
         # Generar número de formulario
         siglas_area = row.get("siglas_area", "XX")
         nombre_comisario = comisario_asignado["nombre"]
-        siglas_comisario = comisario_asignado["siglas"]
+        siglas_comisario = comisario_asignado["siglas_inspector"]  # campo de la tabla comisarios que no he modificado OJO.
         anio_actual = datetime.utcnow().year
         ultimo_numero = comisario_asignado.get("ultimo_numero", 0) + 1
 
