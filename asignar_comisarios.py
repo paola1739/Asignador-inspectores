@@ -54,23 +54,15 @@ def ejecutar_asignacion_comisario():
     assignmenttype_guid = "33aec22e-5094-4cce-9493-a3444d8fba8c"
 
     for _, row in df_denuncias.iterrows():
-        direccion = row["direccion_responsable"]
-        area = row["area_responsable"]
-
-        disponibles = df_comisarios[
-            (df_comisarios["direccion"] == direccion) &
-            (df_comisarios["area"] == area)
-        ]
-
-        if disponibles.empty:
-            print(f"No hay comisarios activos para dirección: {direccion}, área: {area}")
+        if df_comisarios.empty:
+            print("❌ No hay comisarios disponibles en la tabla")
             continue
 
-        # Seleccionar comisario con menos trámites
-        comisario_asignado = disponibles.sort_values("num_tramites").iloc[0]
+        # Seleccionar comisario con menos trámites (sin filtrar por dirección/área)
+        comisario_asignado = df_comisarios.sort_values("num_tramites").iloc[0]
 
         # Generar número de formulario
-        siglas_area = row["siglas_area"]
+        siglas_area = row.get("siglas_area", "XX")
         nombre_comisario = comisario_asignado["nombre"]
         siglas_comisario = comisario_asignado["siglas"]
         anio_actual = datetime.utcnow().year
@@ -136,7 +128,7 @@ def ejecutar_asignacion_comisario():
                 "status": 1,
                 "priority": 0,
                 "assignmenttype": assignmenttype_guid,
-                "location": row["area_responsable"],
+                "location": row.get("area_responsable", ""),
                 "workorderid": str(row["globalid"]),
                 "codigoformulario": numero_formulario,
                 "nombrecomisario": nombre_comisario,
