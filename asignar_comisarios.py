@@ -142,6 +142,8 @@ def ejecutar_asignacion_comisario():
     # Guardar tareas
     if tareas_creadas:
         resp_tareas = layer_asignaciones.edit_features(adds=tareas_creadas)
+        import pprint
+        pprint.pprint(tareas_creadas)
         print("Tareas de comisario creadas:", resp_tareas)
     else:
         print("No se crearon tareas de comisario.")
