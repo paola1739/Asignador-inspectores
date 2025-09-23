@@ -92,9 +92,9 @@ def ejecutar_asignacion_comisario():
         comisarios_actualizados.append(feature_comisario)
 
         # Buscar worker en Workforce
-        worker_index = df_workers[df_workers["userid"] == comisario_asignado["usernamearc"]].index
+        worker_index = df_workers[df_workers["userid"] == comisario_asignado["nomre_de_usuario"]].index
         if worker_index.empty:
-            print(f"No se encontró al trabajador {comisario_asignado['usernamearc']} en Workforce")
+            print(f"No se encontró al trabajador {comisario_asignado['nomre_de_usuario']} en Workforce")
             continue
 
         worker_feature = features_workers.features[worker_index[0]]
