@@ -262,8 +262,7 @@ def ejecutar_asignacion_comisario():
 
                 descripcion_tarea = (
                     f"Informe de supervisión finalizada\n"
-                    f"Infracción: {safe_get(row, 'tipo_infraccion','')}\n"
-                    f"Infractor: {safe_get(row, 'denunciado','')}\n"
+                    f"Infractor: {safe_get(row, 'cedula_infractor','')}\n"
                     f"Proceso administrativo: {safe_get(row, 'proceso_administrativo','')}\n"
                 )
 
