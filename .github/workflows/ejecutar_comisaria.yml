@@ -1,4 +1,4 @@
-name: Ejecutar script de supervision
+name: Ejecutar script de comisaria
 
 on:
   workflow_dispatch:  # permite ejecutarlo manualmente desde GitHub
