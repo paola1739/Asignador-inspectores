@@ -75,7 +75,6 @@ def ejecutar_asignacion_comisario():
             "attributes": {
                 "objectid": row["objectid"],
                 "comisario_asignado": nombre_comisario,
-                "username": comisario_asignado["usernamearc"],
                 "estado_tramite": "Asignado a comisario",
                 "id_denuncia_comparar_comisario": str(row["globalid"])
             }
