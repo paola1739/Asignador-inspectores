@@ -275,7 +275,7 @@ def ejecutar_asignacion_comisario():
                     "status": 1,
                     "priority": 0,
                     "assignmenttype": assignmenttype_guid,
-                    "location": safe_get(row, "area_responsable", ""),
+                    "location": safe_get(row, "direccion", ""),
                     "workorderid": str(globalid_den_value) if globalid_den_value else (str(objid_den_value) if objid_den_value else ""),
                     "codigoformulario": numero_formulario,
                     "nombrecomisario": nombre_comisario,
