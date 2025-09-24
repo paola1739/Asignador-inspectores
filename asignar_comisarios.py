@@ -179,7 +179,7 @@ def ejecutar_asignacion_comisario():
 
                 anio_actual = datetime.utcnow().year
                 siglas_area = safe_get(row, col_siglas_area_den, "XX")
-                numero_formulario = f"DGSH-CO-{siglas_comisario}-{siglas_area}-{anio_actual}-{ultimo_numero}"
+                numero_formulario = f"DGSH-CO-{siglas_comisario}-{anio_actual}-{ultimo_numero}"
 
                 # preparar actualización denuncia (usar el nombre correcto del campo objectid)
                 objid_den_value = safe_get(row, col_obj_denuncia, None)
